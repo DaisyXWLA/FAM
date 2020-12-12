@@ -6,27 +6,22 @@
       v-show="showSearch"
       :inline="true"
     >
-      <el-form-item label="课题名称" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入课题名称"
+      <el-form-item label="奖励人" prop="status">
+        <el-select
+          v-model="queryParams.status"
+          placeholder="请选择人员"
           clearable
           size="small"
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
+        >
+          <el-option
+            v-for="dict in statusOptions"
+            :key="dict.dictValue"
+            :label="dict.dictLabel"
+            :value="dict.dictValue"
+          />
+        </el-select>
       </el-form-item>
-      <el-form-item label="课题登记号" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入课题登记号"
-          clearable
-          size="small"
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="登记日期" prop="status">
+      <el-form-item label="奖励日期" prop="status">
         <el-date-picker
           v-model="title"
           type="daterange"
@@ -80,7 +75,18 @@
           :disabled="single"
           @click="check"
           v-hasPermi="['system:role:remove']"
-          >审核</el-button
+          >同意</el-button
+        >
+      </el-col>
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          icon="el-icon-circle-close"
+          size="mini"
+          :disabled="single"
+          @click="check"
+          v-hasPermi="['system:role:remove']"
+          >拒绝</el-button
         >
       </el-col>
       <el-col :span="1.5">
@@ -107,41 +113,25 @@
     >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" type="index" width="50" />
-      <el-table-column label="课题登记号" align="center" width="200">
-        <template slot-scope="scope">
-          <router-link
-            :to="'/QCGroup/taskDetail/' + scope.row.id"
-            class="link-type"
-          >
-            <span>{{ scope.row.code }}</span>
-          </router-link>
-        </template>
-      </el-table-column>
       <el-table-column
-        label="课题名称"
+        label="奖励原因"
         prop="title"
         align="center"
         :show-overflow-tooltip="true"
       />
-      <el-table-column label="QC小组名称" prop="groupName" align="center" />
+      <el-table-column label="奖励人" prop="name" align="center" />
       <el-table-column
-        label="登记日期"
+        label="奖励日期"
         prop="createTime"
         align="center"
         width="150"
       />
       <el-table-column
-        label="预计完成日期"
-        prop="finishTime"
+        label="奖励积分"
+        prop="integral"
         align="center"
         width="150"
       />
-      <el-table-column label="得分" prop="score" align="center" width="80">
-        <template slot-scope="scope">
-          <span v-if="scope.row.score == 0">-</span>
-          <span v-else>{{ scope.row.score }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="审核状态" align="center" width="100">
         <template slot-scope="scope">
           <el-tag
@@ -173,14 +163,14 @@
             type="text"
             icon="el-icon-s-check"
             @click="check(scope.row)"
-            >审核</el-button
+            >同意</el-button
           >
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-upload"
-            @click="upload(scope.row)"
-            >上传附件</el-button
+            icon="el-icon-close"
+            @click="refuse(scope.row)"
+            >拒绝</el-button
           >
           <el-button
             size="mini"
@@ -214,98 +204,61 @@
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-row>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="奖励人" prop="name">
+                <el-select
+                  v-model="form.sex"
+                  placeholder="请选择人员"
+                  style="width: 100%"
+                >
+                  <el-option
+                    v-for="dict in statusOptions"
+                    :key="dict.dictValue"
+                    :label="dict.dictLabel"
+                    :value="dict.dictValue"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="奖励日期" prop="creatTime">
+                <el-date-picker
+                  v-model="title"
+                  type="date"
+                  placeholder="选择日期"
+                  style="width: 100%"
+                >
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
           <el-col :span="24">
-            <el-form-item label="课题名称" prop="name">
-              <el-input v-model="form.name" placeholder="请输入课题名称" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="课题登记号" prop="code">
-              <el-input v-model="form.name" placeholder="请输入课题登记号" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="登记日期" prop="creatTime">
-              <el-date-picker
-                v-model="title"
-                type="date"
-                placeholder="选择日期"
-              >
-              </el-date-picker>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="QC小组名称" prop="name">
-              <el-select
-                v-model="form.sex"
-                placeholder="请选择QC小组"
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="dict in statusOptions"
-                  :key="dict.dictValue"
-                  :label="dict.dictLabel"
-                  :value="dict.dictValue"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="预计完成日期" prop="creatTime">
-              <el-date-picker
-                v-model="title"
-                type="date"
-                placeholder="选择日期"
-              >
-              </el-date-picker>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="选题理由" prop="name">
+            <el-form-item label="奖励原因" prop="name">
               <el-input
                 type="textarea"
                 v-model="form.name"
-                placeholder="请输入选题理由"
+                placeholder="请输入奖励原因"
               />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="课题目标" prop="name">
+            <el-form-item label="内容" prop="code">
               <el-input
                 type="textarea"
                 v-model="form.name"
-                placeholder="请输入课题目标"
+                placeholder="内容"
               />
             </el-form-item>
           </el-col>
         </el-row>
+
         <el-row>
           <el-col :span="24">
-            <el-form-item label="现状描述" prop="name">
-              <el-input
-                type="textarea"
-                v-model="form.name"
-                placeholder="请输入描述信息"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="达成效果" prop="name">
-              <el-input
-                type="textarea"
-                v-model="form.name"
-                placeholder="请输入预期达成效果"
-              />
+            <el-form-item label="奖励积分" prop="code">
+              <el-input v-model="form.name" placeholder="奖励积分" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -313,6 +266,31 @@
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+    <!-- 审核对话框 -->
+    <el-dialog
+      :title="checkTitle"
+      :visible.sync="checkOpen"
+      width="600px"
+      append-to-body
+    >
+      <el-form ref="form" :model="form" :rules="rules" label-width="50px">
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="描述" prop="name">
+              <el-input
+                type="textarea"
+                v-model="form.name"
+                placeholder="请输入描述内容"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="checkCancel">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -340,8 +318,10 @@ export default {
       categoryList: [],
       // 弹出层标题
       title: "",
+      checkTitle: "",
       // 是否显示弹出层
       open: false,
+      checkOpen: false,
       // 查询参数
       queryParams: {
         current: 1,
@@ -373,9 +353,9 @@ export default {
         {
           code: "FAMKT20200901",
           title: "设备升级改造",
-          groupName: "降耗QC小组",
+          name: "蔡晓旭",
           createTime: "2020-02-01",
-          finishTime: "2020-11-20",
+          integral: "20",
           id: 0,
           status: 0,
           score: 0,
@@ -383,9 +363,9 @@ export default {
         {
           code: "FAMKT20200102",
           title: "工程设计方案优化",
-          groupName: "铆焊QC小组",
+          name: "姚文轩",
           createTime: "2020-02-01",
-          finishTime: "2020-11-20",
+          integral: "20",
           id: 1,
           status: 1,
           score: 0,
@@ -393,9 +373,9 @@ export default {
         {
           code: "FAMKT20201020",
           title: "生产流程改造",
-          groupName: "生产技术部QC小组",
+          name: "周慧娟",
           createTime: "2020-02-01",
-          finishTime: "2020-11-20",
+          integral: "20",
           id: 2,
           status: 2,
           score: 50,
@@ -435,26 +415,27 @@ export default {
     handleAdd() {
       // this.reset();
       this.open = true;
-      this.title = "新增课题";
+      this.title = "新增奖励";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const areaId = row.id || this.ids;
       this.open = true;
-      this.title = "修改课题";
+      this.title = "修改奖励";
     },
     /** 审核 */
     check(row) {
-      if (this.ids.length > 0) {
-        this.$router.push({
-          path: "/QCGroup/check/" + this.ids,
-        });
-      } else {
-        this.$router.push({
-          path: "/QCGroup/check/" + row.id,
-        });
-      }
+      this.checkOpen = true;
+      this.checkTitle = "奖励审核通过";
+    },
+    refuse(row) {
+      this.checkOpen = true;
+      this.checkTitle = "奖励审核拒绝";
+    },
+    checkCancel() {
+      this.checkOpen = false;
+      this.reset();
     },
     upload(row) {
       this.$router.push({

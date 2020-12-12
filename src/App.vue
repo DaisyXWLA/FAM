@@ -12,7 +12,7 @@ export default  {
 <style lang="scss">
 //对话框标题
 .el-dialog__header{
-  background: #3c5dbd;
+  background: #1890FF;
   padding: 10px 20px;
 }
 .el-dialog__title{

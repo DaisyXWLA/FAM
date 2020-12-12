@@ -6,35 +6,75 @@
       v-show="showSearch"
       :inline="true"
     >
-      <el-form-item label="课题名称" prop="name">
+      <el-form-item label="项目名称" prop="name">
         <el-input
           v-model="queryParams.name"
-          placeholder="请输入课题名称"
+          placeholder="请输入项目名称"
           clearable
           size="small"
           style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="课题登记号" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入课题登记号"
+      <el-form-item label="项目来源" prop="status">
+        <el-select
+          v-model="queryParams.status"
+          placeholder="请选择项目来源"
           clearable
           size="small"
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="登记日期" prop="status">
-        <el-date-picker
-          v-model="title"
-          type="daterange"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
         >
-        </el-date-picker>
+          <el-option
+            v-for="dict in statusOptions"
+            :key="dict.dictValue"
+            :label="dict.dictLabel"
+            :value="dict.dictValue"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="项目负责人" prop="status">
+        <el-select
+          v-model="queryParams.status"
+          placeholder="请选择项目负责人"
+          clearable
+          size="small"
+        >
+          <el-option
+            v-for="dict in statusOptions"
+            :key="dict.dictValue"
+            :label="dict.dictLabel"
+            :value="dict.dictValue"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="项目类型" prop="status">
+        <el-select
+          v-model="queryParams.status"
+          placeholder="请选择项目类型"
+          clearable
+          size="small"
+        >
+          <el-option
+            v-for="dict in statusOptions"
+            :key="dict.dictValue"
+            :label="dict.dictLabel"
+            :value="dict.dictValue"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="成本类别" prop="status">
+        <el-select
+          v-model="queryParams.status"
+          placeholder="请选择成本类别"
+          clearable
+          size="small"
+        >
+          <el-option
+            v-for="dict in statusOptions"
+            :key="dict.dictValue"
+            :label="dict.dictLabel"
+            :value="dict.dictValue"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button
@@ -79,7 +119,6 @@
           size="mini"
           :disabled="single"
           @click="check"
-          v-hasPermi="['system:role:remove']"
           >审核</el-button
         >
       </el-col>
@@ -107,10 +146,10 @@
     >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="序号" type="index" width="50" />
-      <el-table-column label="课题登记号" align="center" width="200">
+      <el-table-column label="项目编号" align="center">
         <template slot-scope="scope">
           <router-link
-            :to="'/QCGroup/taskDetail/' + scope.row.id"
+            :to="'/improveProject/detail/' + scope.row.id"
             class="link-type"
           >
             <span>{{ scope.row.code }}</span>
@@ -118,31 +157,24 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="课题名称"
-        prop="title"
+        label="项目名称"
+        prop="projectName"
         align="center"
         :show-overflow-tooltip="true"
       />
-      <el-table-column label="QC小组名称" prop="groupName" align="center" />
       <el-table-column
-        label="登记日期"
-        prop="createTime"
+        label="项目来源"
+        prop="source"
         align="center"
-        width="150"
+        :show-overflow-tooltip="true"
       />
-      <el-table-column
-        label="预计完成日期"
-        prop="finishTime"
-        align="center"
-        width="150"
-      />
-      <el-table-column label="得分" prop="score" align="center" width="80">
-        <template slot-scope="scope">
-          <span v-if="scope.row.score == 0">-</span>
-          <span v-else>{{ scope.row.score }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="审核状态" align="center" width="100">
+      <el-table-column label="项目类型" prop="projectType" align="center" />
+      <el-table-column label="项目负责人" prop="leader" align="center" />
+      <el-table-column label="成本类别" prop="costType" align="center" />
+      <el-table-column label="部门" prop="departmentName" align="center" />
+      <el-table-column label="科室/班组" prop="team" align="center" />
+      <el-table-column label="节约总金额" prop="saveAmount" align="center" />
+       <el-table-column label="审核状态" align="center" width="100">
         <template slot-scope="scope">
           <el-tag
             type="warning"
@@ -164,10 +196,26 @@
       <el-table-column
         label="操作"
         align="center"
-        width="250"
+        width="300"
         class-name="small-padding fixed-width"
       >
         <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-user-solid"
+            @click="handleMember(scope.row)"
+            v-hasPermi="['system:role:edit']"
+            >成员</el-button
+          >
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:role:edit']"
+            >修改</el-button
+          >
           <el-button
             size="mini"
             type="text"
@@ -181,14 +229,6 @@
             icon="el-icon-upload"
             @click="upload(scope.row)"
             >上传附件</el-button
-          >
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:role:edit']"
-            >修改</el-button
           >
           <el-button
             size="mini"
@@ -211,38 +251,26 @@
     />
 
     <!-- 添加或修改区域对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+    <el-dialog :title="title" :visible.sync="open" width="900px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row>
-          <el-col :span="24">
-            <el-form-item label="课题名称" prop="name">
-              <el-input v-model="form.name" placeholder="请输入课题名称" />
+          <el-col :span="12">
+            <el-form-item label="项目名称" prop="name">
+              <el-input v-model="form.name" placeholder="请输入小组名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="项目编号" prop="name">
+              <el-input v-model="form.name" placeholder="自动生成" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="课题登记号" prop="code">
-              <el-input v-model="form.name" placeholder="请输入课题登记号" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="登记日期" prop="creatTime">
-              <el-date-picker
-                v-model="title"
-                type="date"
-                placeholder="选择日期"
-              >
-              </el-date-picker>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="QC小组名称" prop="name">
+            <el-form-item label="项目来源" prop="name">
               <el-select
                 v-model="form.sex"
-                placeholder="请选择QC小组"
+                placeholder="请选择部门"
                 style="width: 100%"
               >
                 <el-option
@@ -255,56 +283,144 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="预计完成日期" prop="creatTime">
-              <el-date-picker
-                v-model="title"
-                type="date"
-                placeholder="选择日期"
+            <el-form-item label="项目负责人" prop="name">
+              <el-select
+                v-model="form.sex"
+                placeholder="请选择项目负责人"
+                style="width: 100%"
               >
-              </el-date-picker>
+                <el-option
+                  v-for="dict in statusOptions"
+                  :key="dict.dictValue"
+                  :label="dict.dictLabel"
+                  :value="dict.dictValue"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="项目类型" prop="name">
+              <el-select
+                v-model="form.sex"
+                placeholder="请选择项目类型"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="dict in statusOptions"
+                  :key="dict.dictValue"
+                  :label="dict.dictLabel"
+                  :value="dict.dictValue"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="成本类别" prop="name">
+              <el-select
+                v-model="form.sex"
+                placeholder="请选择成本类别"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="dict in statusOptions"
+                  :key="dict.dictValue"
+                  :label="dict.dictLabel"
+                  :value="dict.dictValue"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="部门" prop="name">
+              <el-select
+                v-model="form.sex"
+                placeholder="请选择部门"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="dict in statusOptions"
+                  :key="dict.dictValue"
+                  :label="dict.dictLabel"
+                  :value="dict.dictValue"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="科室/班组" prop="name">
+              <el-select
+                v-model="form.sex"
+                placeholder="请选择科室或班组"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="dict in statusOptions"
+                  :key="dict.dictValue"
+                  :label="dict.dictLabel"
+                  :value="dict.dictValue"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="预计节约总金额" prop="name">
+              <el-input v-model="form.name" placeholder="请输入节约总金额" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="小组成员" prop="name">
+              <el-select
+                v-model="form.postIds"
+                multiple
+                placeholder="请选择成员"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in statusOptions"
+                  :key="item.postId"
+                  :label="item.postName"
+                  :value="item.postId"
+                  :disabled="item.status == 1"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="选题理由" prop="name">
+            <el-form-item label="问题描述" prop="name">
               <el-input
                 type="textarea"
                 v-model="form.name"
-                placeholder="请输入选题理由"
+                placeholder="请输入问题描述"
               />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="课题目标" prop="name">
+            <el-form-item label="采取措施" prop="name">
               <el-input
                 type="textarea"
                 v-model="form.name"
-                placeholder="请输入课题目标"
+                placeholder="请输入采取措施"
               />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-form-item label="现状描述" prop="name">
+            <el-form-item label="计算明细" prop="name">
               <el-input
                 type="textarea"
                 v-model="form.name"
-                placeholder="请输入描述信息"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="达成效果" prop="name">
-              <el-input
-                type="textarea"
-                v-model="form.name"
-                placeholder="请输入预期达成效果"
+                placeholder="请描述计算明细"
               />
             </el-form-item>
           </el-col>
@@ -356,9 +472,6 @@ export default {
         name: [
           { required: true, message: "小组名称不能为空", trigger: "blur" },
         ],
-        code: [
-          { required: true, message: "课题登记号不能为空", trigger: "blur" },
-        ],
       },
     };
   },
@@ -371,37 +484,46 @@ export default {
       this.loading = false;
       this.categoryList = [
         {
-          code: "FAMKT20200901",
-          title: "设备升级改造",
-          groupName: "降耗QC小组",
-          createTime: "2020-02-01",
-          finishTime: "2020-11-20",
+          code: "P20200901",
+          projectName: "标准印痕滚检机改造",
+          departmentName: "技术部",
+          source: "对标",
+          projectType: "效率",
+          leader: "张雨生",
+          costType: "材料费用",
+          team: "一班",
+          saveAmount: "120000",
+          status:'0',
           id: 0,
-          status: 0,
-          score: 0,
         },
         {
-          code: "FAMKT20200102",
-          title: "工程设计方案优化",
-          groupName: "铆焊QC小组",
-          createTime: "2020-02-01",
-          finishTime: "2020-11-20",
+          code: "P20200102",
+          projectName: "生产流程改造",
+          departmentName: "生产部",
+          source: "对标",
+          projectType: "管理",
+          leader: "周筱奎",
+          costType: "材料费用",
+          team: "二班",
+          saveAmount: "120000",
+          status:'1',
           id: 1,
-          status: 1,
-          score: 0,
         },
         {
-          code: "FAMKT20201020",
-          title: "生产流程改造",
-          groupName: "生产技术部QC小组",
-          createTime: "2020-02-01",
-          finishTime: "2020-11-20",
+          code: "P20201020",
+          projectName: "工程设计方案优化",
+          departmentName: "工程部",
+          source: "对标",
+          projectType: "质量",
+          leader: "马燕",
+          costType: "材料费用",
+          team: "三班",
+          saveAmount: "120000",
+          status:'2',
           id: 2,
-          status: 2,
-          score: 50,
         },
       ];
-      this.total = 2;
+      this.total = 3;
     },
     // 取消按钮
     cancel() {
@@ -435,31 +557,36 @@ export default {
     handleAdd() {
       // this.reset();
       this.open = true;
-      this.title = "新增课题";
+      this.title = "新增项目";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const areaId = row.id || this.ids;
       this.open = true;
-      this.title = "修改课题";
+      this.title = "修改项目";
     },
     /** 审核 */
     check(row) {
       if (this.ids.length > 0) {
         this.$router.push({
-          path: "/QCGroup/check/" + this.ids,
+          path: "/improveProject/check/" + this.ids,
         });
       } else {
         this.$router.push({
-          path: "/QCGroup/check/" + row.id,
+          path: "/improveProject/check/" + row.id,
         });
       }
     },
     upload(row) {
       this.$router.push({
-        path: "/QCGroup/accessory/" + row.id,
+        path: "/improveProject/accessory/" + row.id,
       });
+    },
+    /** 成员操作 */
+    handleMember(row) {
+      // const areaId = row.id;
+      this.$router.push({ path: "/QCGroup/member/" + row.id });
     },
     /** 提交按钮 */
     submitForm: function () {

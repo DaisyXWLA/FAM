@@ -198,32 +198,32 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col span=24>
-            <el-form-item label="提案标题" prop="name">
-              <el-input v-model="form.name" placeholder="请输入提案标题" />
+            <el-form-item label="提案标题" prop="title">
+              <el-input v-model="form.title" placeholder="请输入提案标题" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col span=12>
-            <el-form-item label="类别" prop="name">
-              <el-select v-model="form.sex" placeholder="请选择类别">
+            <el-form-item label="类别" prop="categoryName">
+              <el-select v-model="form.sex" placeholder="请选择类别" style="width:100%">
                 <el-option
-                  v-for="dict in statusOptions"
+                  v-for="dict in categoryOptions"
                   :key="dict.dictValue"
                   :label="dict.dictLabel"
-                  :value="dict.dictValue"
+                  :value="dict.categoryName"
                 ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col span=12>
-            <el-form-item label="区域" prop="name">
-              <el-select v-model="form.sex" placeholder="请选择区域">
+            <el-form-item label="区域" prop="areaName">
+              <el-select v-model="form.sex" placeholder="请选择区域" style="width:100%">
                 <el-option
                   v-for="dict in statusOptions"
                   :key="dict.dictValue"
                   :label="dict.dictLabel"
-                  :value="dict.dictValue"
+                  :value="dict.areaName"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -231,21 +231,21 @@
         </el-row>
         <el-row>
           <el-col span=24>
-            <el-form-item label="提案描述" prop="name">
-              <el-input type="textarea" v-model="form.name" placeholder="请输入现状描述" />
+            <el-form-item label="提案描述" prop="description">
+              <el-input type="textarea" v-model="form.description" placeholder="请输入现状描述" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col span=24>
-            <el-form-item label="期望建议" prop="name">
-              <el-input type="textarea" v-model="form.name" placeholder="请输入期望建议" />
+            <el-form-item label="期望建议" prop="proposal">
+              <el-input type="textarea" v-model="form.proposal" placeholder="请输入期望建议" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col span=24>
-            <el-form-item label="上传附件" prop="name">
+            <el-form-item label="上传附件" prop="proposal">
               <el-upload
                 action="#"
                 list-type="picture-card"
@@ -327,13 +327,26 @@ export default {
         size: 10,
         name: undefined,
       },
+      categoryOptions:[],
       statusOptions: [],
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        name: [
-          { required: true, message: "区域名称不能为空", trigger: "blur" },
+        title: [
+          { required: true, message: "提案标题不能为空", trigger: "blur" },
+        ],
+        categoryName: [
+          { required: true, message: "请选择提案类别", trigger: "blur" },
+        ],
+        areaName: [
+          { required: true, message: "请选择区域", trigger: "blur" },
+        ],
+        description: [
+          { required: true, message: "提案描述不能为空", trigger: "blur" },
+        ],
+        proposal: [
+          { required: true, message: "期望建议不能为空", trigger: "blur" },
         ],
       },
       //上传图片
@@ -481,5 +494,8 @@ export default {
 }
 /deep/ .el-upload-list--picture-card .el-upload-list__item-actions {
   font-size: 16px;
+}
+/deep/ .el-dialog__title{
+  color: #fff;
 }
 </style>

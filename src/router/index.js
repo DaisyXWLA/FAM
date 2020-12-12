@@ -267,10 +267,88 @@ export const constantRoutes = [
     hidden: true,
     children: [
       {
-        path: 'IntegralDistribution/:id(\\d+)',
-        component: (resolve) => require(['@/views/QCGroup/IntegralDistribution/index'], resolve),
-        name: 'IntegralDistribution',
+        path: 'integralDistribution',
+        component: (resolve) => require(['@/views/QCGroup/integralDistribution/index'], resolve),
+        name: 'integralDistribution',
         meta: { title: '积分分配' }
+      }
+    ]
+  },
+  {
+    path: '/improveProject',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'projectManage',
+        component: (resolve) => require(['@/views/improveProject/projectManage/index'], resolve),
+        name: 'projectManage',
+        meta: { title: '项目管理' }
+      }
+    ]
+  },
+  {
+    path: '/improveProject',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'integralDistribution',
+        component: (resolve) => require(['@/views/improveProject/integralDistribution/index'], resolve),
+        name: 'integralDistribution',
+        meta: { title: '积分分配' }
+      }
+    ]
+  },
+  {
+    path: '/improveProject',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'check/:id(\\d+)',
+        component: (resolve) => require(['@/views/improveProject/projectManage/check'], resolve),
+        name: 'check',
+        meta: { title: '项目审核' }
+      }
+    ]
+  },
+  {
+    path: '/improveProject',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'accessory/:id(\\d+)',
+        component: (resolve) => require(['@/views/improveProject/projectManage/accessory'], resolve),
+        name: 'accessory',
+        meta: { title: '上传附件' }
+      }
+    ]
+  },
+  {
+    path: '/improveProject',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'detail/:id(\\d+)',
+        component: (resolve) => require(['@/views/improveProject/projectManage/detail'], resolve),
+        name: 'detail',
+        meta: { title: '项目详情' }
+      }
+    ]
+  },
+  {
+    path: '/additionalReward',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'additionalRewardManage',
+        component: (resolve) => require(['@/views/additionalReward/additionalRewardManage/index'], resolve),
+        name: 'additionalRewardManage',
+        meta: { title: '附加奖励管理' }
       }
     ]
   }

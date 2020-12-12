@@ -3,9 +3,14 @@
     <el-form>
       <div class="title">课题基本信息</div>
       <el-row>
-        <el-col :span="24">
+        <el-col :span="12">
           <el-form-item label="课题名称" prop="code">
             设备升级改造
+          </el-form-item>
+        </el-col>
+         <el-col :span="12">
+          <el-form-item label="审核状态" prop="code">
+            <span style="color: #67c23a">审核通过</span>
           </el-form-item>
         </el-col>
       </el-row>
@@ -22,14 +27,14 @@
       <el-row>
         <el-col :span="24">
           <el-form-item label="选题理由" prop="code">
-            FAMKT20200901
+            设备不够先进，为提高生产效率、优化生产质量，需要对设备进行全面升级改造
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24">
           <el-form-item label="课题目标" prop="code">
-            设备升级改造
+            短时间内完成设备全面升级改造
           </el-form-item>
         </el-col>
       </el-row>
@@ -39,35 +44,28 @@
             降耗QC小组
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <!-- <el-col :span="12">
           <el-form-item label="得分" prop="code">
             -
           </el-form-item>
-        </el-col>
-      </el-row>
-      <el-row>
+        </el-col> -->
         <el-col :span="12">
           <el-form-item label="预计完成日期" prop="code">
             2020-11-20
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="审核状态" prop="code">
-            <span style="color: #ffba00">待审核</span>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24">
           <el-form-item label="现状描述" prop="code">
-            FAMKT20200901
+            目前设备部分零部件需要更新，主要结构需要优化
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="24">
           <el-form-item label="达成效果" prop="code">
-            设备升级改造
+            升级改造后的设备达到原生产效率的1.5倍
           </el-form-item>
         </el-col>
       </el-row>

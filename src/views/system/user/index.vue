@@ -38,7 +38,7 @@
               @keyup.enter.native="handleQuery"
             />
           </el-form-item>
-          <el-form-item label="手机号码" prop="phonenumber">
+          <!-- <el-form-item label="手机号码" prop="phonenumber">
             <el-input
               v-model="queryParams.phonenumber"
               placeholder="请输入手机号码"
@@ -47,7 +47,7 @@
               style="width: 240px"
               @keyup.enter.native="handleQuery"
             />
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="状态" prop="status">
             <el-select
               v-model="queryParams.status"
@@ -64,7 +64,7 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="创建时间">
+          <!-- <el-form-item label="创建时间">
             <el-date-picker
               v-model="dateRange"
               size="small"
@@ -75,7 +75,7 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"
             ></el-date-picker>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
             <el-button type="cyan" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
             <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -135,11 +135,11 @@
 
         <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column label="用户编号" align="center" prop="userId" />
+          <el-table-column label="用户编号" align="center" prop="userId" width="80"/>
           <el-table-column label="用户名称" align="center" prop="userName" :show-overflow-tooltip="true" />
           <el-table-column label="用户昵称" align="center" prop="nickName" :show-overflow-tooltip="true" />
           <el-table-column label="部门" align="center" prop="dept.deptName" :show-overflow-tooltip="true" />
-          <el-table-column label="手机号码" align="center" prop="phonenumber" width="120" />
+          <el-table-column label="手机号码" align="center" prop="phonenumber"/>
           <el-table-column label="状态" align="center">
             <template slot-scope="scope">
               <el-switch
@@ -150,7 +150,7 @@
               ></el-switch>
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" align="center" prop="createTime" width="160">
+          <el-table-column label="创建时间" align="center" prop="createTime" >
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
@@ -158,7 +158,7 @@
           <el-table-column
             label="操作"
             align="center"
-            width="160"
+            width="200"
             class-name="small-padding fixed-width"
           >
             <template slot-scope="scope">
